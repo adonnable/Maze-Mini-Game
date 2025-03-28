@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Maze Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Overlay with Play Button -->
+      <div id="overlay">
+        <div class="inner-wrapper">
+          <div class="image-container">
+            <img src="./assets/maze_rush_logo.png" alt="game_title" class="game_title_img">
+          </div>
+          <!-- Money elements -->
+          <img src="./assets/coin2.png" alt="money" class="money coin1">
+          <img src="./assets/coin1.png" alt="money" class="money coin2">
+          <img src="./assets/coin2.png" alt="money" class="money coin3">
+          <img src="./assets/coin2.png" alt="money" class="money coin4">
+          <img src="./assets/coin2.png" alt="money" class="money coin5">
+          <img src="./assets/coin1.png" alt="money" class="money coin6">
+          <img src="./assets/coin2.png" alt="money" class="money coin7">
+          <img src="./assets/coin2.png" alt="money" class="money coin8">
+          <img src="./assets/coin1.png" alt="money" class="money coin9">
+          <img src="./assets/coin2.png" alt="money" class="money coin10">
+          <img src="./assets/bill.png" alt="money" class="money bill1">
+          <img src="./assets/bill.png" alt="money" class="money bill2">
+          <img src="./assets/bill.png" alt="money" class="money bill3">
+           
+          <button id="play-btn">Play</button>
+
+          <div class="instructions">
+            <p>Use the arrow keys: <span class="arrow-key">↑</span> <span class="arrow-key">↓</span> <span class="arrow-key">←</span> <span class="arrow-key">→</span> to move the character.</p>
+            <p>Collect all the coins and avoid being caught by the slime monsters to win the game.</p>
+          </div>    
+        </div>
+      </div>
+
+      <!-- Game Container -->
+      <div id="game-container">
+        <div id="hud">
+          <div class="right-corner">
+            <div id="heart-container"></div> Time: <span id="time">00:00</span>
+          </div>
+  
+          <div class="left-corner">
+            Coins: <span id="coin-counter">0</span> / <span id="coin-total">0</span>
+
+          </div>
+          </div>
+          <div class="trans-background">
+            <canvas id="game-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+          <img id="modal-message" src="" alt="" class="game-status">
+          <div class="collected-wrapper">
+            <p id="modal-coins" class="collected-coins"></p> 
+            <p class="collected-title">Coins Collected</p> 
+          </div>
+          <button id="exit-btn">Exit</button>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
