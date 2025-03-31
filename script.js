@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let gameStarted = false;
   const gameDurationSeconds = 180;
   let timeLeftSeconds = gameDurationSeconds;
+  let isWalking = false;
 
   // --- Sound Effects ---
   const backgroundMusic = new Audio("assets/audios/background.wav");
@@ -44,6 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const helpSound = new Audio("assets/audios/help.ogg");
   const gameOverSound = new Audio("assets/audios/gameover.wav");
   const winSound = new Audio("assets/audios/win.wav");
+  const footstepSound = new Audio("assets/audios/step.mp3");
+  const growlSound = new Audio("assets/audios/growl.mp3");
+  const reviveSound = new Audio("assets/audios/revive.mp3");
 
   // --- Volume Control (Optional) ---
   backgroundMusic.volume = 0.4; // Adjust volume (0.0 to 1.0)
@@ -52,6 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
   helpSound.volume = 0.8;
   gameOverSound.volume = 0.9;
   winSound.volume = 1.0;
+  footstepSound.volume = 0.2;
+  growlSound.volume = 1.0;
+  reviveSound.volume = 1.0;
 
   // --- Background Music ---
   function playBackgroundMusic() {
@@ -418,6 +425,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  function playFootstepSound() {
+    if (!isWalking) {
+      footstepSound.playbackRate = 2.3;
+      footstepSound.loop = true;
+      footstepSound.play().catch((error) => {
+        console.error("Error playing footstep sound:", error);
+      });
+      isWalking = true;
+    }
+  }
+
+  //Stop the footsteps
+  function stopFootstepSound() {
+    if (isWalking) {
+      footstepSound.pause();
+      footstepSound.currentTime = 0; // Reset to the beginning
+      footstepSound.loop = false;
+      isWalking = false;
+      console.log("Footstep sound stopped");
+    }
+  }
+
   //Player Movement
   function movePlayer() {
     if (!gameActive) return;
@@ -444,11 +473,12 @@ document.addEventListener("DOMContentLoaded", function () {
           player.spriteCol = 1;
           break;
       }
+
       if (!checkWallCollision(newX, newY, player.width, player.height)) {
         if (!player.isRespawning) {
+          playFootstepSound();
           player.x = newX;
           player.y = newY;
-          // Increment the animation counter
           player.animationCounter++;
 
           // Update animation frame only when animationCounter reaches animationSpeed
@@ -458,8 +488,11 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }
       } else {
+        stopFootstepSound(); // Stop if there's a wall collision
         player.animationFrame = 0;
       }
+    } else {
+      stopFootstepSound(); // Stop footstep if no key is pressed
     }
   }
 
@@ -520,7 +553,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function startRespawnBlink() {
-    resetPlayerPosition(); //Set default postion
+    resetPlayerPosition();
+    playSound(reviveSound);
     player.isRespawning = true;
     player.blinkCount = 0;
     let blinkInterval = setInterval(() => {
@@ -551,6 +585,23 @@ document.addEventListener("DOMContentLoaded", function () {
         keys.up = keys.down = keys.left = keys.right = false;
 
         playSound(helpSound);
+        playSound(growlSound);
+
+        const fadeOutDuration = 1200;
+        const fadeInterval = 50;
+        const steps = fadeOutDuration / fadeInterval;
+        let volumeStep = growlSound.volume / steps;
+
+        let fadeOut = setInterval(() => {
+          if (growlSound.volume > volumeStep) {
+            growlSound.volume -= volumeStep;
+          } else {
+            growlSound.pause();
+            growlSound.currentTime = 0;
+            growlSound.volume = 1;
+            clearInterval(fadeOut);
+          }
+        }, fadeInterval);
 
         setTimeout(() => {
           if (lives > 0) {
@@ -609,7 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (timeLeftSeconds === 0) {
       clearInterval(gameTimerInterval);
       playSound(gameOverSound);
-      showModal("Time's up! Game Over.", coinsCollected);
+      showModal("gameOver", coinsCollected);
       return;
     }
 
